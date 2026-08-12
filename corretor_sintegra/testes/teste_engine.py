@@ -23,7 +23,7 @@ class TesteEngine(unittest.TestCase):
         cls.pasta_corretores = cls.raiz / "corretores"
         cls.pasta_data = cls.raiz / "data"
         cls.pasta_data.mkdir(exist_ok=True)
-        cls.entrada = cls.raiz.parent / "exemplos para estudar" / "SINTEGRA EX1 (1).TXT"
+        cls.entrada = cls.raiz / "testes" / "fixtures" / "SINTEGRA_EXEMPLO_SINTETICO.TXT"
         cls.gestor = PluginManager(cls.pasta_corretores)
         cls.plugins = cls.gestor.scan()
 
@@ -147,7 +147,7 @@ class TesteNovosPlugins(unittest.TestCase):
         cls.pasta_data.mkdir(exist_ok=True)
         cls.gestor = PluginManager(cls.pasta_corretores)
         cls.plugins = cls.gestor.scan()
-        cls.entrada = cls.raiz.parent / "exemplos para estudar" / "SINTEGRA EX1 (1).TXT"
+        cls.entrada = cls.raiz / "testes" / "fixtures" / "SINTEGRA_EXEMPLO_SINTETICO.TXT"
         cls.original = cls.entrada.read_text(encoding="latin-1")
 
     def _rodar(self, plugin_id, conteudo=None, modo=MODO_AUTO_RELATAR):

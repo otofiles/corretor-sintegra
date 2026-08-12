@@ -92,7 +92,7 @@ CorretorSINTEGRA/
 │   ├── ui/                  # interface (Tkinter)
 │   ├── corretores/          # plugins de correção (arquitetura em plugins)
 │   ├── art/                 # ícones
-│   └── data/                # dados padrão (exemplos, CFOP)
+│   └── data/                # dados padrão (tabela CFOP)
 └── README.md
 ```
 
