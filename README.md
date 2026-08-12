@@ -105,15 +105,22 @@ python build/build_exe.py        # dist/CorretorSINTEGRA.exe
 
 O nome do asset do pacote **precisa ser exatamente** `corretor_sintegra.zip`.
 
-### Publicando uma nova versão
+### Como funciona
 
-1. Bump em `corretor_sintegra/core/versao.py` (`VERSAO = "x.y.z"`).
-2. `python build/build_pacote.py` e (se mudou o launcher) `python build/build_exe.py`.
-3. Commit e push das mudanças de código.
-4. Crie a release no GitHub com a tag `vX.Y.Z` e anexe **dois** assets:
-   `dist/CorretorSINTEGRA.exe` e `dist/corretor_sintegra.zip`.
+O Corretor SINTEGRA confere o arquivo conforme as regras do Convênio ICMS 57/95 e
+ajuda a deixá-lo pronto para o Validador do Sintegra:
 
-O `.exe` de qualquer usuário detecta a nova release e atualiza sozinho.
+- **Verifica cada registro** do arquivo contra as regras da escrituração (CNPJ/IE,
+  CFOP, datas, CST, totalização do arquivo etc.).
+- **Corrige automaticamente** o que tem certeza (por exemplo, dígitos verificadores
+  e totais do arquivo), sempre com backup do original antes de alterar qualquer coisa.
+- **Aponta o que precisa de atenção** com uma orientação clara de onde olhar no seu
+  sistema (por exemplo, "localize a nota X e confira a IE"), sem mexer no que não
+  tem certeza.
+- **Se atualiza sozinho**: quando há nova versão, o programa busca e aplica a
+  atualização automaticamente.
+
+Você só escolhe o arquivo, clica em PROCESSAR e segue o que aparece na tela.
 
 ### Testes e checagem (modo desenvolvimento)
 
