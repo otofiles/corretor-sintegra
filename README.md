@@ -11,6 +11,18 @@ distribuir um novo instalador a cada correção.
 
 ---
 
+## Download
+
+Baixe o executável mais recente direto da página de releases (funciona em
+qualquer PC com Windows, 32 ou 64 bits, e não precisa de instalação):
+
+- **[CorretorSINTEGRA.exe (última versão)](https://github.com/otofiles/corretor-sintegra/releases/latest/download/CorretorSINTEGRA.exe)**
+
+Na primeira execução o app baixa sozinho o restante dos arquivos da internet e,
+nas próximas aberturas, já se atualiza automaticamente pela página do GitHub.
+
+---
+
 ## 1. Como funciona o auto-updater (resumo)
 
 - `launcher.py` vira o `CorretorSINTEGRA.exe` (PyInstaller, apenas o "esqueleto").
@@ -96,7 +108,7 @@ perdidos nas atualizações.
 python build/build_pacote.py
 ```
 
-Gera `dist/corretor_sintegra.zip` (com 38 arquivos, ~110 KB). O nome do asset
+Gera `dist/corretor_sintegra.zip` (com ~39 arquivos, ~110 KB). O nome do asset
 **precisa ser exatamente** `corretor_sintegra.zip`.
 
 ### Executável (só na primeira vez e quando mudar o launcher)
@@ -133,12 +145,14 @@ Sempre que quiser disponibilizar correções ou melhorias para os usuários:
    - Vá em **Releases → New release**.
    - Tag: `v1.0.1` (atenção ao prefixo `v`).
    - Título: `v1.0.1`.
-   - Anexe o arquivo `dist/corretor_sintegra.zip` como asset
-     (**o nome do asset deve ser `corretor_sintegra.zip`**).
-   - Publish release.
+    - Anexe **dois** arquivos como assets:
+      - `dist/CorretorSINTEGRA.exe` — o executável que o usuário final baixa.
+      - `dist/corretor_sintegra.zip` — o pacote que o auto-updater baixa
+        (**o nome do asset deve ser exatamente `corretor_sintegra.zip`**).
+    - Publish release.
 
-Pronto. Na próxima abertura, o `.exe` de qualquer usuário detecta a nova release,
-baixa o pacote e atualiza sozinho. **Não é preciso redistribuir o .exe.**
+Pronto. Na próxima abertura, o `.exe` de qualquer usuário (novo ou antigo)
+detecta a nova release, baixa o pacote e atualiza sozinho.
 
 ### Adicionar um novo corretor
 
