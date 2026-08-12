@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.bak
+
+# Backups automáticos
+ui_backup_*/
+
+# Build / distribuição (o pacote vai para o GitHub Release)
+dist/
+build/_version_info.txt
+build/__pycache__/
+build/CorretorSINTEGRA/
+*.spec
+
+# Arquivo de memória local (contém caminhos absolutos do usuário)
+corretor_sintegra/contexto.md
+
+# Dados de usuário gerados em runtime
+corretor_sintegra/data/logs/
+corretor_sintegra/data/settings.json
+corretor_sintegra/data/teste_entrada.txt
+
+# Ambiente / editores
+.opencode/
+.venv/
+venv/
+*.egg-info/
