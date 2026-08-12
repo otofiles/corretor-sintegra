@@ -47,7 +47,6 @@ class TesteEngine(unittest.TestCase):
         self.assertIn("corretor_uf", ids)
         self.assertIn("corretor_cfop", ids)
         self.assertIn("corretor_data", ids)
-        self.assertIn("corretor_aliquota", ids)
         self.assertIn("corretor_modelo", ids)
         self.assertIn("corretor_numero", ids)
         self.assertIn("corretor_valores", ids)
@@ -215,12 +214,6 @@ class TesteNovosPlugins(unittest.TestCase):
         self.assertGreaterEqual(len(resultado.itens), 1)
         self.assertIn("não é uma data", resultado.itens[0].descricao)
 
-    def test_corretor_aliquota_aponta_limite(self):
-        linha = self._linha_50(aliquota="9999")
-        resultado = self._rodar("corretor_aliquota", "\n".join([linha]))
-        self.assertEqual(len(resultado.itens), 1)
-        self.assertIn("25%", resultado.itens[0].descricao)
-
     def test_corretor_modelo_aponta_modelo_incorreto(self):
         linha = self._linha_50(modelo="99")
         resultado = self._rodar("corretor_modelo", "\n".join([linha]))
@@ -257,7 +250,7 @@ class TesteNovosPlugins(unittest.TestCase):
     def test_arquivo_exemplo_nao_gera_falsos_positivos_novos(self):
         ids_novos = {
             "corretor_cnpj", "corretor_uf", "corretor_cfop", "corretor_data",
-            "corretor_aliquota", "corretor_modelo", "corretor_numero",
+            "corretor_modelo", "corretor_numero",
             "corretor_valores", "corretor_registro90",
         }
         plugin = next(

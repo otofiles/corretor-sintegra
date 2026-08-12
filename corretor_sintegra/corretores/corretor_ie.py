@@ -869,8 +869,48 @@ def _regiao_ie_isenta(linha: str) -> bool:
     return False
 
 
+_IE_NOTAS_RELATADAS: set = set()
+
+
+def _nota_registro50(linha: str) -> Optional[str]:
+    if len(linha) >= 51:
+        return linha[45:51]
+    return None
+
+
+def _emitir_apontamento_ie(
+    registro: Registro, linha: str, motivo: str, regra: str, confianca: str
+) -> List[ItemCorrecao]:
+    nota = _nota_registro50(linha)
+    if nota and nota in _IE_NOTAS_RELATADAS:
+        return []
+    if nota:
+        _IE_NOTAS_RELATADAS.add(nota)
+    if nota:
+        descricao = (
+            f"Nota fiscal {nota}: Inscrição Estadual (IE) precisa de correção. "
+            "Confira a IE informada nessa nota no seu sistema e corrija se estiver errada."
+        )
+    else:
+        descricao = motivo or "Inscrição Estadual (IE) precisa de correção."
+    return [
+        ItemCorrecao(
+            numero_linha=registro.numero_linha,
+            tipo_registro=registro.tipo,
+            texto_original=linha,
+            confianca=confianca,
+            descricao=descricao,
+            regra=regra,
+            corrigir=False,
+        )
+    ]
+
+
 def _analisar(registro: Registro) -> List[ItemCorrecao]:
     linha = registro.conteudo
+    if registro.tipo == "10":
+        _IE_NOTAS_RELATADAS.clear()
+        return []
     if not linha.startswith("50"):
         return []
 
@@ -889,17 +929,11 @@ def _analisar(registro: Registro) -> List[ItemCorrecao]:
     resultado = _CORRETOR.analisar_linha(linha)
 
     if resultado.status == "AMBIGUA":
-        return [
-            ItemCorrecao(
-                numero_linha=registro.numero_linha,
-                tipo_registro=registro.tipo,
-                texto_original=linha,
-                confianca="BAIXA",
-                descricao=resultado.motivo or "Mais de uma solução igualmente consistente.",
-                regra=resultado.regra,
-                corrigir=False,
-            )
-        ]
+        return _emitir_apontamento_ie(
+            registro, linha,
+            resultado.motivo or "Mais de uma solução igualmente consistente.",
+            resultado.regra, "BAIXA",
+        )
 
     if resultado.status in ("CORRIGIDA", "SIMULACAO"):
         return [
@@ -918,17 +952,9 @@ def _analisar(registro: Registro) -> List[ItemCorrecao]:
     motivo = resultado.motivo or ""
     if "âncora" in motivo or "reconstrução não alterou" in motivo or "Registro diferente de 50" in motivo:
         return []
-    return [
-        ItemCorrecao(
-            numero_linha=registro.numero_linha,
-            tipo_registro=registro.tipo,
-            texto_original=linha,
-            confianca="BAIXA",
-            descricao=motivo or "Registro não corrigido.",
-            regra=resultado.regra,
-            corrigir=False,
-        )
-    ]
+    return _emitir_apontamento_ie(
+        registro, linha, motivo or "Registro não corrigido.", resultado.regra, "BAIXA"
+    )
 
 
 plugin = CorretorPlugin(
@@ -936,6 +962,6 @@ plugin = CorretorPlugin(
     nome="Corretor de Inscrição Estadual (IE)",
     descricao="Valida e corrige Inscrições Estaduais nos registros 50 conforme a regra de cada UF. IE marcada como ISENTO é considerada válida.",
     versao="1.1",
-    registros_afetados=["50"],
+    registros_afetados=["50", "10"],
     analisar=_analisar,
 )

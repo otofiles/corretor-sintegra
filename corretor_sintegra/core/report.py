@@ -87,7 +87,6 @@ def salvar_relatorio_txt(pasta: Path, texto: str) -> Path:
 GUIA_AMIGAVEL = {
     "corretor_ie": "confira a Inscrição Estadual (IE) dessa nota no seu sistema e corrija se estiver errada",
     "corretor_cnpj": "confira o CNPJ/CPF dessa nota no seu sistema e corrija se estiver errado",
-    "corretor_aliquota": "confira a alíquota informada (máximo 25%) e ajuste na emissão da nota",
     "corretor_cfop": "confira o CFOP (4 dígitos) e corrija na emissão da nota",
     "corretor_cfop_transporte_registro50": (
         "esse CFOP de transporte exige modelo CT-e (57 ou 67); "
