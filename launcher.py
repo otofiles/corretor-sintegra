@@ -6,8 +6,27 @@ import shutil
 import sys
 import zipfile
 from pathlib import Path
+import importlib.util
+import sys
+import tkinter
+import tkinter.ttk
+import tkinter.filedialog
+import tkinter.scrolledtext
 from tkinter import Tk, Label, messagebox
 from urllib.request import Request, urlopen
+
+
+def instalar_log_erros(base: Path) -> None:
+    if not getattr(sys, "frozen", False):
+        return
+    try:
+        base.mkdir(parents=True, exist_ok=True)
+        log = base / "erro.log"
+        sys.stderr = open(log, "a", encoding="utf-8", errors="replace")
+        sys.stdout = sys.stderr
+    except Exception:
+        pass
+
 
 REPOSITORIO = "otofiles/corretor-sintegra"
 NOME_ASSET = "corretor_sintegra.zip"
@@ -150,6 +169,8 @@ def baixar_e_extrair(base: Path, pacote: Path, versao: str, status) -> None:
 
 
 def principal() -> int:
+    base = pasta_base()
+    instalar_log_erros(base)
     icone = caminho_icone()
     root, status = _splash(icone)
 
