@@ -85,20 +85,24 @@ def salvar_relatorio_txt(pasta: Path, texto: str) -> Path:
 
 
 GUIA_AMIGAVEL = {
-    "corretor_ie": "confira o número da Inscrição Estadual (IE) informado",
-    "corretor_cnpj": "confira o CNPJ/CPF informado",
-    "corretor_aliquota": "confira a alíquota informada (máximo 25%)",
-    "corretor_cfop": "confira o CFOP informado (4 dígitos)",
+    "corretor_ie": "confira a Inscrição Estadual (IE) dessa nota no seu sistema e corrija se estiver errada",
+    "corretor_cnpj": "confira o CNPJ/CPF dessa nota no seu sistema e corrija se estiver errado",
+    "corretor_aliquota": "confira a alíquota informada (máximo 25%) e ajuste na emissão da nota",
+    "corretor_cfop": "confira o CFOP (4 dígitos) e corrija na emissão da nota",
     "corretor_cfop_transporte_registro50": (
-        "confira o CFOP de transporte (deve usar modelo CT-e 57/67)"
+        "esse CFOP de transporte exige modelo CT-e (57 ou 67); "
+        "gere a nota como CT-e e exporte o arquivo novamente"
     ),
-    "corretor_cst061": "confira se o CST 061 é o correto para a operação",
-    "corretor_data": "confira a data informada (formato DDMMAA)",
-    "corretor_modelo": "confira o modelo do documento informado",
-    "corretor_numero": "confira o número do documento informado",
-    "corretor_registro90": "confira os totais declarados no registro 90",
-    "corretor_uf": "confira a sigla da UF informada",
-    "corretor_valores": "confira o valor informado",
+    "corretor_cst061": (
+        "localize essa nota no seu sistema de emissão e corrija o CST 061 "
+        "nos itens para o código correto; depois gere o arquivo SINTEGRA novamente"
+    ),
+    "corretor_data": "confira a data (AAAAMMDD) e corrija na emissão da nota",
+    "corretor_modelo": "confira o modelo do documento e corrija na emissão da nota",
+    "corretor_numero": "confira o número do documento e corrija na emissão da nota",
+    "corretor_registro90": "confira os totais do registro 90 (o app já corrige automaticamente quando possível)",
+    "corretor_uf": "confira a UF e corrija na emissão da nota",
+    "corretor_valores": "confira o valor informado e corrija na emissão da nota",
 }
 
 GUIA_GENERICO = "confira os dados deste registro no sistema"

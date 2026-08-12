@@ -20,8 +20,9 @@ def _analisar(registro: Registro) -> List[ItemCorrecao]:
             texto_original=registro.conteudo,
             confianca="ALTA",
             descricao=(
-                f"Nota fiscal {numero_nota} com CST 061 identificada. "
-                "Revise o enquadramento da operação."
+                f"Nota fiscal {numero_nota}: CST 061 identificado nos itens. "
+                "Localize essa nota no seu sistema de emissão e corrija o CST 061 "
+                "nos itens para o código correto; depois gere o arquivo SINTEGRA novamente."
             ),
             regra="CST 061",
             corrigir=False,
