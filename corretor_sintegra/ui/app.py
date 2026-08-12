@@ -40,6 +40,7 @@ class AppContext:
         self.pasta_logs = self.pasta_dados / "logs"
         self.pasta_logs.mkdir(parents=True, exist_ok=True)
         self.pasta_corretores_atualizados = self.pasta_dados / "corretores"
+        self.pasta_corretores_atualizados.mkdir(parents=True, exist_ok=True)
         self.atualizador = Atualizador()
         self.versao_local = VERSAO
         self.versao_remota = ""
