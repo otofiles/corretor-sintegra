@@ -1,204 +1,134 @@
 # Corretor SINTEGRA
 
-Aplicativo em Python + Tkinter (só biblioteca padrão) que analisa e corrige
-arquivos SINTEGRA (Convênio ICMS 57/95). Correções automáticas somente com
-confiança alta e sempre com backup `.bak`.
-
-Este projeto usa um **executável magro com auto-atualização via GitHub**: o
-`.exe` quase nunca muda. Toda a interface e os corretores são baixados do
-repositório na primeira execução e nas atualizações. Assim você não precisa
-distribuir um novo instalador a cada correção.
+Programa que **analisa e corrige arquivos SINTEGRA** (Convênio ICMS 57/95) gerados
+pelo seu sistema. Ele encontra os erros mais comuns e já corrige a maior parte
+sozinho, sempre com um backup do seu arquivo original.
 
 ---
 
-## Download
+## Baixar
 
-Baixe o executável mais recente direto da página de releases (funciona em
-qualquer PC com Windows, 32 ou 64 bits, e não precisa de instalação):
+Clique no link abaixo e salve o arquivo no seu computador:
 
-- **[CorretorSINTEGRA.exe (última versão)](https://github.com/otofiles/corretor-sintegra/releases/latest/download/CorretorSINTEGRA.exe)**
+➡️ **[Baixar Corretor SINTEGRA (última versão)](https://github.com/otofiles/corretor-sintegra/releases/latest/download/CorretorSINTEGRA.exe)**
 
-Na primeira execução o app baixa sozinho o restante dos arquivos da internet e,
-nas próximas aberturas, já se atualiza automaticamente pela página do GitHub.
+Funciona em qualquer PC com Windows (32 ou 64 bits) e não precisa de instalação.
 
 ---
 
-## 1. Como funciona o auto-updater (resumo)
+## Como usar
 
-- `launcher.py` vira o `CorretorSINTEGRA.exe` (PyInstaller, apenas o "esqueleto").
-- Ao abrir, o `.exe` consulta a *última release* do GitHub
-  (`otofiles/corretor-sintegra`) e compara a versão com a que já está em
-  `%LOCALAPPDATA%\CorretorSINTEGRA`.
-- Se houver versão nova (ou for a primeira vez), ele baixa o pacote
-  `corretor_sintegra.zip`, extrai para
+1. **Abra o programa** dando dois cliques no `CorretorSINTEGRA.exe`.
+   - Na primeira vez, ele baixa o restante dos arquivos sozinho (precisa de internet).
+   - Nas próximas aberturas, já se atualiza automaticamente.
+
+2. **Escolha o arquivo SINTEGRA**
+   - Clique em **Selecionar...** e escolha o arquivo de texto (`.TXT`) que o seu sistema gerou.
+
+3. **Clique em PROCESSAR**
+   - O programa varre o arquivo, corrige os erros automaticamente e faz um backup.
+
+4. **Veja o resultado**
+   - Aparece um resumo com: registros analisados, corrigidos, apontados, erros e o
+     backup criado. Se algo precisar de atenção, o programa avisa o que fazer.
+
+Pronto. Para um novo arquivo, é só repetir do passo 2.
+
+> **Configurações e relatório técnico:** no canto superior direito há uma engrenagem ⚙
+> (uso do técnico). O botão **Buscar atualizações** também fica ali e força a verificação
+> de novas versões.
+
+---
+
+## Perguntas frequentes
+
+**Apareceu "Windows protegeu seu PC".**
+O programa é gratuito e não é assinado, então o Windows avisa. Clique em
+*Mais informações* e depois em *Executar mesmo assim*. Não prejudica o seu computador.
+
+**Precisa de internet?**
+Só na primeira abertura (para baixar o programa) e quando há uma atualização nova.
+Depois disso roda normalmente.
+
+**Onde fica meu arquivo original?**
+O programa cria um backup automático (arquivo `.bak`) antes de qualquer correção.
+Nada é alterado sem segurança.
+
+**Como atualizo?**
+É sozinho: basta abrir o programa. Se quiser forçar, use o botão *Buscar atualizações*.
+
+---
+
+<details>
+<summary><b>Para técnicos</b></summary>
+
+### Visão geral
+
+O projeto usa um **executável magro com auto-atualização via GitHub**: o `CorretorSINTEGRA.exe`
+quase nunca muda. Toda a interface e os corretores são baixados do repositório na
+primeira execução e nas atualizações.
+
+- `launcher.py` vira o `.exe` (PyInstaller, apenas o esqueleto).
+- Ao abrir, o `.exe` consulta a *última release* do GitHub (`otofiles/corretor-sintegra`),
+  compara com `%LOCALAPPDATA%\CorretorSINTEGRA\versao.txt` e, se houver novidade (ou for a
+  primeira vez), baixa `corretor_sintegra.zip`, extrai para
   `%LOCALAPPDATA%\CorretorSINTEGRA\corretor_sintegra` e grava `versao.txt`.
-- Depois carrega o app a partir desse pacote e abre a tela.
-- O botão **"Buscar atualizações"** (canto superior direito) força a verificação,
-  baixa se houver novidade e reinicia o programa.
+- O botão **Buscar atualizações** força a verificação, baixa e reinicia.
 
-> O repositório configurado está em `launcher.py` e em
-> `corretor_sintegra/core/atualizador.py` (constante `REPOSITORIO`).
-> Troque `otofiles/corretor-sintegra` pelo seu usuário/repo ao publicar.
+O repositório configurado está na constante `REPOSITORIO` em `launcher.py` e em
+`corretor_sintegra/core/atualizador.py`.
 
----
-
-## 2. Pré-requisitos
-
-- Python **3.11** (32 bits neste projeto) — https://www.python.org
-- `PyInstaller` (já instalado): `pip install pyinstaller`
-- `Git` (já instalado). No Windows: https://git-scm.com
-- Conta no GitHub e o repositório `otofiles/corretor-sintegra` criado (público).
-
----
-
-## 3. Estrutura do projeto
+### Estrutura
 
 ```
 CorretorSINTEGRA/
-├── launcher.py                 # esqueleto que vira o .exe (auto-update)
+├── launcher.py              # esqueleto que vira o .exe (auto-update)
 ├── build/
-│   ├── build_pacote.py         # gera dist/corretor_sintegra.zip
-│   └── build_exe.py            # gera dist/CorretorSINTEGRA.exe
-├── corretor_sintegra/          # pacote baixado/atualizado pelo app
-│   ├── main.py                 # ponto de entrada do app
-│   ├── core/                   # núcleo (engine, caminhos, atualizador...)
-│   ├── ui/                     # interface (Tkinter)
-│   ├── corretores/             # plugins de correção (arquitetura em plugins)
-│   ├── art/                    # ícones (ico2.ico / ico2.png)
-│   └── data/                   # dados padrão (exemplos, CFOP)
-├── exemplos para estudar/      # arquivos usados nos testes
-├── dist/                       # saída de build (ignorado pelo git)
-├── .gitignore
+│   ├── build_pacote.py      # gera dist/corretor_sintegra.zip
+│   └── build_exe.py         # gera dist/CorretorSINTEGRA.exe
+├── corretor_sintegra/       # pacote baixado/atualizado pelo app
+│   ├── main.py              # ponto de entrada do app
+│   ├── core/                # núcleo (engine, caminhos, atualizador...)
+│   ├── ui/                  # interface (Tkinter)
+│   ├── corretores/          # plugins de correção (arquitetura em plugins)
+│   ├── art/                 # ícones
+│   └── data/                # dados padrão (exemplos, CFOP)
 └── README.md
 ```
 
-Dados do usuário (logs, `settings.json`, corretores extras) ficam em
-`%LOCALAPPDATA%\CorretorSINTEGRA\dados` — separados do pacote, para não serem
-perdidos nas atualizações.
-
----
-
-## 4. Subindo o projeto para o GitHub (primeira vez)
-
-1. Crie o repositório no GitHub: `otofiles/corretor-sintegra` (público).
-   **Não** marque "Add a README" (já temos um).
-
-2. No terminal, dentro da pasta `CorretorSINTEGRA`:
-
-   ```powershell
-   git init
-   git branch -M main
-   git remote add origin https://github.com/otofiles/corretor-sintegra.git
-   git add .
-   git commit -m "Versao inicial 1.0.0 com auto-updater via GitHub"
-   git push -u origin main
-   ```
-
-   (Se o Git pedir identificação, configure localmente:
-   `git config user.name "otofiles"` e
-   `git config user.email "otofiles@users.noreply.github.com"`.)
-
----
-
-## 5. Gerando o pacote e o executável
-
-### Pacote (o que o auto-updater baixa)
+### Gerando pacote e executável
 
 ```powershell
-python build/build_pacote.py
+python build/build_pacote.py     # dist/corretor_sintegra.zip (~39 arquivos)
+python build/build_exe.py        # dist/CorretorSINTEGRA.exe
 ```
 
-Gera `dist/corretor_sintegra.zip` (com ~39 arquivos, ~110 KB). O nome do asset
-**precisa ser exatamente** `corretor_sintegra.zip`.
+O nome do asset do pacote **precisa ser exatamente** `corretor_sintegra.zip`.
 
-### Executável (só na primeira vez e quando mudar o launcher)
+### Publicando uma nova versão
 
-```powershell
-python build/build_exe.py
-```
+1. Bump em `corretor_sintegra/core/versao.py` (`VERSAO = "x.y.z"`).
+2. `python build/build_pacote.py` e (se mudou o launcher) `python build/build_exe.py`.
+3. Commit e push das mudanças de código.
+4. Crie a release no GitHub com a tag `vX.Y.Z` e anexe **dois** assets:
+   `dist/CorretorSINTEGRA.exe` e `dist/corretor_sintegra.zip`.
 
-Gera `dist/CorretorSINTEGRA.exe` com o ícone `art/ico2.ico` e informações de
-versão profissionais (sem ícone/metadata de compilação do Python).
+O `.exe` de qualquer usuário detecta a nova release e atualiza sozinho.
 
-> Dica: para testar o `.exe` localmente sem o GitHub, defina as variáveis de
-> ambiente `CORRETOR_API_URL` e `CORRETOR_ASSET_URL` apontando para um servidor
-> local que sirva o JSON da release e o zip.
-
----
-
-## 6. Lançando uma nova versão (release)
-
-Sempre que quiser disponibilizar correções ou melhorias para os usuários:
-
-1. **Bump de versão** — edite `corretor_sintegra/core/versao.py`:
-   ```python
-   VERSAO = "1.0.1"
-   ```
-2. Gere o pacote: `python build/build_pacote.py`
-3. Faça o commit e o push das mudanças de código:
-   ```powershell
-   git add .
-   git commit -m "Correcoes da versao 1.0.1"
-   git push
-   ```
-4. Crie a **Release** no GitHub:
-   - Vá em **Releases → New release**.
-   - Tag: `v1.0.1` (atenção ao prefixo `v`).
-   - Título: `v1.0.1`.
-    - Anexe **dois** arquivos como assets:
-      - `dist/CorretorSINTEGRA.exe` — o executável que o usuário final baixa.
-      - `dist/corretor_sintegra.zip` — o pacote que o auto-updater baixa
-        (**o nome do asset deve ser exatamente `corretor_sintegra.zip`**).
-    - Publish release.
-
-Pronto. Na próxima abertura, o `.exe` de qualquer usuário (novo ou antigo)
-detecta a nova release, baixa o pacote e atualiza sozinho.
-
-### Adicionar um novo corretor
-
-1. Crie `corretor_sintegra/corretores/corretor_novo.py` expondo um objeto
-   `plugin` da classe `CorretorPlugin` (ver os corretores existentes).
-2. Bump de versão (item 1 acima) e publique a release (itens 2–4).
-3. O app aparece automaticamente para todos os usuários na próxima verificação.
-
----
-
-## 7. Comandos úteis (modo desenvolvimento)
+### Testes e checagem (modo desenvolvimento)
 
 Do diretório `corretor_sintegra`:
 
 ```powershell
-# Abrir a interface (modo dev, sem .exe)
-python main.py
-
-# Rodar os testes
-python -m unittest discover -s testes -v
-
-# Checar sintaxe de todo o projeto
-python -m compileall -q corretor_sintegra
+python main.py                                  # abrir a interface (sem .exe)
+python -m unittest discover -s testes -v        # rodar testes
+python -m compileall -q corretor_sintegra       # checar sintaxe
 ```
 
----
+### Segurança
 
-## 8. Solução de problemas
+O download usa HTTPS do GitHub e o pacote é extraído para uma pasta do usuário. Não há
+execução de código fora do pacote oficial da release. Para ambiente corporativo, use um
+fork privado ou self-host alterando a constante `REPOSITORIO`.
 
-- **"Sem conexão / não foi possível baixar o aplicativo" na primeira abertura:**
-  o repositório ainda não tem nenhuma *release* com o asset
-  `corretor_sintegra.zip`. Crie a release (seção 6). O `.exe` só funciona após
-  a primeira release existir.
-- **Atualização não aparece:** confirme que a tag da release tem o prefixo `v`
-  (ex.: `v1.0.1`) e que o asset se chama exatamente `corretor_sintegra.zip`.
-- **Quer forçar refazer o download:** apague a pasta
-  `%LOCALAPPDATA%\CorretorSINTEGRA`. O app baixará tudo de novo na próxima
-  abertura.
-- **Testes com erro de arquivo de exemplo:** a pasta `exemplos para estudar`
-  deve estar em `CorretorSINTEGRA/exemplos para estudar`.
-
----
-
-## 9. Segurança
-
-O download usa HTTPS do GitHub e o pacote é extraído para uma pasta do usuário.
-Não há execução de código fora do pacote oficial da release. Para ambiente
-corporativo, você pode usar um fork privado ou self-host alterando a constante
-`REPOSITORIO` em `launcher.py` / `core/atualizador.py`.
+</details>
