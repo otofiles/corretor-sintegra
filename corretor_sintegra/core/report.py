@@ -89,14 +89,15 @@ GUIA_AMIGAVEL = {
     "corretor_cnpj": "confira o CNPJ/CPF dessa nota no seu sistema e corrija se estiver errado",
     "corretor_cfop": "confira o CFOP (4 dígitos) e corrija na emissão da nota",
     "corretor_cfop_item_registro50": (
-        "confira o CFOP dos itens desta nota: ele deve coincidir com o CFOP "
-        "do cabeçalho (registro 50); se um item está com CFOP diferente, "
-        "reimporte ou corrija a nota no seu sistema"
+        "revise no seu sistema de emissão o CFOP do cabeçalho (registro 50) "
+        "e dos itens (registro 54) desta nota: eles devem coincidir; se um "
+        "item está com CFOP diferente, corrija ou reimporte a nota"
     ),
     "corretor_registro51_modelo": (
-        "confira o cabeçalho (registro 50) desta nota: o validador do "
-        "Sintegra exige que ele seja modelo 01; se o modelo estiver "
-        "diferente, reimporte ou corrija a nota no seu sistema"
+        "este documento de transporte (registro 51) não cruzou com a nota "
+        "fiscal (registro 50): revise no seu sistema de emissão o CFOP "
+        "informado no cabeçalho da nota e nos itens dela (registro 54) e "
+        "confira se o modelo do cabeçalho está correto"
     ),
     "corretor_cfop_transporte_registro50": (
         "esse CFOP de transporte exige modelo CT-e (57 ou 67); "

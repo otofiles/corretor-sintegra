@@ -321,15 +321,13 @@ class TesteNovosPlugins(unittest.TestCase):
         self.assertIn("55", item.descricao)
         self.assertIn("01", item.descricao)
 
-    def test_corretor_registro51_modelo_aponta_sem_reg50(self):
+    def test_corretor_registro51_modelo_nao_aponta_sem_reg50(self):
         conteudo = "\n".join([
             self._linha_10("00000000000000"),
-            self._linha_51(numero="000002", modelo="01"),
+            self._linha_51(numero="000001", modelo="01"),
         ])
         resultado = self._rodar("corretor_registro51_modelo", conteudo)
-        self.assertEqual(len(resultado.itens), 1)
-        self.assertFalse(resultado.itens[0].corrigir)
-        self.assertIn("000002", resultado.itens[0].descricao)
+        self.assertEqual(len(resultado.itens), 0)
 
     def test_corretor_registro51_modelo_nao_aponta_multi_modelo(self):
         conteudo = "\n".join([

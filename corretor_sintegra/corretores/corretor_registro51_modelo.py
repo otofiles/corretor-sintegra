@@ -40,22 +40,17 @@ def _analisar(registro: Registro) -> List[ItemCorrecao]:
         if not nota:
             return []
         modelos = _CABECALHOS.get(nota)
-        if modelos is None:
-            descricao = (
-                f"Nota fiscal {nota}: não foi encontrado registro 50 "
-                f"(cabeçalho) correspondente para esta nota — o validador do "
-                f"Sintegra exige um registro 50 modelo {_MODELO_ESPERADO}."
-            )
-            regra = "Registro 50 não encontrado para o registro 51"
-        elif _MODELO_ESPERADO not in modelos:
-            descricao = (
-                f"Nota fiscal {nota}: o registro 50 (cabeçalho) correspondente "
-                f"está com modelo {', '.join(sorted(modelos))}; o validador do "
-                f"Sintegra exige modelo {_MODELO_ESPERADO}."
-            )
-            regra = "Modelo do registro 50 difere de 01"
-        else:
+        if modelos is None or _MODELO_ESPERADO in modelos:
             return []
+        descricao = (
+            f"Nota fiscal {nota}: o registro 50 (cabeçalho) referenciado por "
+            f"este documento de transporte está com modelo "
+            f"{', '.join(sorted(modelos))}; o validador do Sintegra exige "
+            f"modelo {_MODELO_ESPERADO}. Revise no seu sistema de emissão o "
+            f"CFOP informado no cabeçalho da nota e nos itens dela (registro "
+            f"54) e confira se o modelo do cabeçalho está correto."
+        )
+        regra = "Modelo do registro 50 difere de 01"
         return [
             ItemCorrecao(
                 numero_linha=registro.numero_linha,
