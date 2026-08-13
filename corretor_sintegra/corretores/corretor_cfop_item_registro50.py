@@ -88,6 +88,6 @@ plugin = CorretorPlugin(
         "incorreta e são apontados (não corrigidos automaticamente)."
     ),
     versao="1.0",
-    registros_afetados=["50", "54"],
+    registros_afetados=["10", "50", "54"],
     analisar=_analisar,
 )

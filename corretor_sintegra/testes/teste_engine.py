@@ -171,13 +171,20 @@ class TesteNovosPlugins(unittest.TestCase):
         )
 
     def _linha_50(self, modelo="55", numero="000001", cfop="5102",
-                  aliquota="1700", valor="0000000000000", situacao="N"):
+                  serie="   ", aliquota="1700", valor="0000000000000",
+                  situacao="N"):
         return (
             "50" + "0" * 14 + " " * 14 + "20260715" + "SP" + modelo
-            + " " * 3 + numero + cfop + "P"
+            + serie + numero + cfop + "P"
             + valor + "0" * 13 + "0" * 13 + "0" * 13 + "0" * 13
             + aliquota + situacao
         )
+
+    def _linha_51(self, numero="000001", cfop="5102", serie="   "):
+        return (
+            "51" + "0" * 14 + " " * 14 + "20260715" + "SP"
+            + serie + numero + cfop
+        ).ljust(126)
 
     def test_corretor_cnpj_recalcula_dv(self):
         from core.validacao import dv_cnpj
@@ -290,18 +297,11 @@ class TesteNovosPlugins(unittest.TestCase):
         resultado = self._rodar("corretor_cfop_item_registro50", conteudo)
         self.assertEqual(len(resultado.itens), 0)
 
-    def _linha_51(self, modelo="55", numero="000001", cfop="1102"):
-        linha = (
-            "51" + "0" * 14 + " " * 14 + "20260715" + "SP"
-            + modelo + " " * 3 + numero + cfop
-        )
-        return linha.ljust(126)
-
     def test_corretor_registro51_modelo_ok(self):
         conteudo = "\n".join([
             self._linha_10("00000000000000"),
             self._linha_50(numero="000001", modelo="01"),
-            self._linha_51(numero="000001", modelo="01"),
+            self._linha_51(numero="000001", cfop="5102"),
         ])
         resultado = self._rodar("corretor_registro51_modelo", conteudo)
         self.assertEqual(len(resultado.itens), 0)
@@ -310,7 +310,7 @@ class TesteNovosPlugins(unittest.TestCase):
         conteudo = "\n".join([
             self._linha_10("00000000000000"),
             self._linha_50(numero="000001", modelo="55"),
-            self._linha_51(numero="000001", modelo="55"),
+            self._linha_51(numero="000001", cfop="5102"),
         ])
         resultado = self._rodar("corretor_registro51_modelo", conteudo)
         self.assertEqual(len(resultado.itens), 1)
@@ -321,33 +321,43 @@ class TesteNovosPlugins(unittest.TestCase):
         self.assertIn("55", item.descricao)
         self.assertIn("01", item.descricao)
 
-    def test_corretor_registro51_modelo_nao_aponta_sem_reg50(self):
+    def test_corretor_registro51_modelo_aponta_cfop_divergente(self):
         conteudo = "\n".join([
             self._linha_10("00000000000000"),
-            self._linha_51(numero="000001", modelo="01"),
+            self._linha_50(numero="000001", modelo="01", cfop="5102"),
+            self._linha_51(numero="000001", cfop="1102"),
         ])
         resultado = self._rodar("corretor_registro51_modelo", conteudo)
-        self.assertEqual(len(resultado.itens), 0)
+        self.assertEqual(len(resultado.itens), 1)
+        self.assertIn("000001", resultado.itens[0].descricao)
+
+    def test_corretor_registro51_modelo_aponta_sem_reg50(self):
+        conteudo = "\n".join([
+            self._linha_10("00000000000000"),
+            self._linha_51(numero="000001", cfop="5102"),
+        ])
+        resultado = self._rodar("corretor_registro51_modelo", conteudo)
+        self.assertEqual(len(resultado.itens), 1)
 
     def test_corretor_registro51_modelo_nao_aponta_multi_modelo(self):
         conteudo = "\n".join([
             self._linha_10("00000000000000"),
             self._linha_50(numero="000001", modelo="01"),
             self._linha_50(numero="000001", modelo="55"),
-            self._linha_51(numero="000001", modelo="55"),
+            self._linha_51(numero="000001", cfop="5102"),
         ])
         resultado = self._rodar("corretor_registro51_modelo", conteudo)
         self.assertEqual(len(resultado.itens), 0)
 
-    def test_corretor_registro51_modelo_reg50_outro_cnpj(self):
+    def test_corretor_registro51_modelo_nao_aponta_reg50_outro_cnpj(self):
         linha_50_outro = (
             "50" + "9" * 14 + " " * 14 + "20260715" + "SP"
-            + "01" + " " * 3 + "000001" + "5102"
+            + "01" + "   " + "000001" + "5102"
         ).ljust(126)
         conteudo = "\n".join([
             self._linha_10("00000000000000"),
             linha_50_outro,
-            self._linha_51(numero="000001", modelo="01"),
+            self._linha_51(numero="000001", cfop="5102"),
         ])
         resultado = self._rodar("corretor_registro51_modelo", conteudo)
         self.assertEqual(len(resultado.itens), 0)
