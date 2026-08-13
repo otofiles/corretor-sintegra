@@ -1,4 +1,4 @@
 from __future__ import annotations
 
-VERSAO = "1.0.5"
+VERSAO = "1.0.6"
 NOME_APP = "Corretor SINTEGRA"

@@ -4,14 +4,12 @@ from typing import Dict, List, Set
 
 from core.models import CorretorPlugin, ItemCorrecao, Registro
 
-_POS_CNPJ_50 = (2, 16)
 _POS_NOTA_50 = (45, 51)
 _POS_MODELO_50 = (40, 42)
-_POS_CNPJ_51 = (2, 16)
 _POS_NOTA_51 = (45, 51)
 
 _MODELO_ESPERADO = "01"
-_CABECALHOS: Dict[tuple, Set[str]] = {}
+_CABECALHOS: Dict[str, Set[str]] = {}
 
 
 def _reiniciar_estado() -> None:
@@ -29,21 +27,19 @@ def _analisar(registro: Registro) -> List[ItemCorrecao]:
     if tipo == "50":
         if len(linha) < _POS_MODELO_50[1]:
             return []
-        cnpj = linha[_POS_CNPJ_50[0]:_POS_CNPJ_50[1]].strip()
         nota = linha[_POS_NOTA_50[0]:_POS_NOTA_50[1]].strip()
         modelo = linha[_POS_MODELO_50[0]:_POS_MODELO_50[1]].strip()
-        if cnpj and nota and modelo:
-            _CABECALHOS.setdefault((cnpj, nota), set()).add(modelo)
+        if nota and modelo:
+            _CABECALHOS.setdefault(nota, set()).add(modelo)
         return []
 
     if tipo == "51":
         if len(linha) < _POS_NOTA_51[1]:
             return []
-        cnpj = linha[_POS_CNPJ_51[0]:_POS_CNPJ_51[1]].strip()
         nota = linha[_POS_NOTA_51[0]:_POS_NOTA_51[1]].strip()
         if not nota:
             return []
-        modelos = _CABECALHOS.get((cnpj, nota))
+        modelos = _CABECALHOS.get(nota)
         if modelos is None:
             descricao = (
                 f"Nota fiscal {nota}: não foi encontrado registro 50 "
@@ -80,11 +76,14 @@ plugin = CorretorPlugin(
     nome="Modelo do cabeçalho (reg. 51 × reg. 50)",
     descricao=(
         "Para cada registro 51, verifica se existe um registro 50 (cabeçalho) "
-        "da mesma nota (CNPJ + nº) com modelo 01, conforme exige o validador "
-        "do Sintegra. Quando não há registro 50 correspondente ou o modelo "
-        "dele difere de 01, aponta o erro (não corrige automaticamente)."
+        "da mesma nota com modelo 01, conforme exige o validador do Sintegra. "
+        "O registro 51 (documento de transporte) referencia a nota fiscal "
+        "(registro 50) pelo número da nota, que pode estar sob CNPJ diferente "
+        "do emitente; por isso a busca do cabeçalho é feita pelo número da "
+        "nota. Quando não há registro 50 correspondente ou o modelo dele difere "
+        "de 01, aponta o erro (não corrige automaticamente)."
     ),
-    versao="1.0",
+    versao="1.0.5",
     registros_afetados=["50", "51"],
     analisar=_analisar,
 )

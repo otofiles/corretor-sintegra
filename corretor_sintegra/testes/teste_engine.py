@@ -341,6 +341,19 @@ class TesteNovosPlugins(unittest.TestCase):
         resultado = self._rodar("corretor_registro51_modelo", conteudo)
         self.assertEqual(len(resultado.itens), 0)
 
+    def test_corretor_registro51_modelo_reg50_outro_cnpj(self):
+        linha_50_outro = (
+            "50" + "9" * 14 + " " * 14 + "20260715" + "SP"
+            + "01" + " " * 3 + "000001" + "5102"
+        ).ljust(126)
+        conteudo = "\n".join([
+            self._linha_10("00000000000000"),
+            linha_50_outro,
+            self._linha_51(numero="000001", modelo="01"),
+        ])
+        resultado = self._rodar("corretor_registro51_modelo", conteudo)
+        self.assertEqual(len(resultado.itens), 0)
+
     def test_corretor_cfop_item_aponta_sem_reg50(self):
         conteudo = "\n".join([
             self._linha_10("00000000000000"),
