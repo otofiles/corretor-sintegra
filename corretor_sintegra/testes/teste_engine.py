@@ -51,6 +51,8 @@ class TesteEngine(unittest.TestCase):
         self.assertIn("corretor_numero", ids)
         self.assertIn("corretor_valores", ids)
         self.assertIn("corretor_registro90", ids)
+        self.assertIn("corretor_cfop_item_registro50", ids)
+        self.assertIn("corretor_registro51_modelo", ids)
 
     def test_cfop_transporte_aponta_modelo_incorreto(self):
         cfop = next(
@@ -246,6 +248,108 @@ class TesteNovosPlugins(unittest.TestCase):
         item = next(i for i in resultado.itens if i.corrigir)
         self.assertIn("5000000008", item.texto_corrigido)
         self.assertIn("9900000092", item.texto_corrigido)
+
+    def _linha_54(self, numero="000001", cfop="5102"):
+        linha = (
+            "54" + "0" * 14 + " " * 5 + numero + cfop
+            + "0" * (126 - (2 + 14 + 5 + 6 + 4))
+        )
+        return linha
+
+    def test_corretor_cfop_item_aponta_divergente(self):
+        conteudo = "\n".join([
+            self._linha_10("00000000000000"),
+            self._linha_50(numero="000001", cfop="1403"),
+            self._linha_54(numero="000001", cfop="1102"),
+        ])
+        resultado = self._rodar("corretor_cfop_item_registro50", conteudo)
+        self.assertEqual(len(resultado.itens), 1)
+        item = resultado.itens[0]
+        self.assertFalse(item.corrigir)
+        self.assertEqual(item.confianca, "ALTA")
+        self.assertEqual(item.tipo_registro, "54")
+        self.assertIn("1403", item.descricao)
+
+    def test_corretor_cfop_item_nao_aponta_quando_casa(self):
+        conteudo = "\n".join([
+            self._linha_10("00000000000000"),
+            self._linha_50(numero="000001", cfop="1403"),
+            self._linha_54(numero="000001", cfop="1403"),
+        ])
+        resultado = self._rodar("corretor_cfop_item_registro50", conteudo)
+        self.assertEqual(len(resultado.itens), 0)
+
+    def test_corretor_cfop_item_nao_aponta_multi_cfop_legitimo(self):
+        conteudo = "\n".join([
+            self._linha_10("00000000000000"),
+            self._linha_50(numero="000001", cfop="1403"),
+            self._linha_50(numero="000001", cfop="1102"),
+            self._linha_54(numero="000001", cfop="1403"),
+            self._linha_54(numero="000001", cfop="1102"),
+        ])
+        resultado = self._rodar("corretor_cfop_item_registro50", conteudo)
+        self.assertEqual(len(resultado.itens), 0)
+
+    def _linha_51(self, modelo="55", numero="000001", cfop="1102"):
+        linha = (
+            "51" + "0" * 14 + " " * 14 + "20260715" + "SP"
+            + modelo + " " * 3 + numero + cfop
+        )
+        return linha.ljust(126)
+
+    def test_corretor_registro51_modelo_ok(self):
+        conteudo = "\n".join([
+            self._linha_10("00000000000000"),
+            self._linha_50(numero="000001", modelo="01"),
+            self._linha_51(numero="000001", modelo="01"),
+        ])
+        resultado = self._rodar("corretor_registro51_modelo", conteudo)
+        self.assertEqual(len(resultado.itens), 0)
+
+    def test_corretor_registro51_modelo_aponta_diferente(self):
+        conteudo = "\n".join([
+            self._linha_10("00000000000000"),
+            self._linha_50(numero="000001", modelo="55"),
+            self._linha_51(numero="000001", modelo="55"),
+        ])
+        resultado = self._rodar("corretor_registro51_modelo", conteudo)
+        self.assertEqual(len(resultado.itens), 1)
+        item = resultado.itens[0]
+        self.assertFalse(item.corrigir)
+        self.assertEqual(item.confianca, "ALTA")
+        self.assertEqual(item.tipo_registro, "51")
+        self.assertIn("55", item.descricao)
+        self.assertIn("01", item.descricao)
+
+    def test_corretor_registro51_modelo_aponta_sem_reg50(self):
+        conteudo = "\n".join([
+            self._linha_10("00000000000000"),
+            self._linha_51(numero="000002", modelo="01"),
+        ])
+        resultado = self._rodar("corretor_registro51_modelo", conteudo)
+        self.assertEqual(len(resultado.itens), 1)
+        self.assertFalse(resultado.itens[0].corrigir)
+        self.assertIn("000002", resultado.itens[0].descricao)
+
+    def test_corretor_registro51_modelo_nao_aponta_multi_modelo(self):
+        conteudo = "\n".join([
+            self._linha_10("00000000000000"),
+            self._linha_50(numero="000001", modelo="01"),
+            self._linha_50(numero="000001", modelo="55"),
+            self._linha_51(numero="000001", modelo="55"),
+        ])
+        resultado = self._rodar("corretor_registro51_modelo", conteudo)
+        self.assertEqual(len(resultado.itens), 0)
+
+    def test_corretor_cfop_item_aponta_sem_reg50(self):
+        conteudo = "\n".join([
+            self._linha_10("00000000000000"),
+            self._linha_54(numero="000002", cfop="1102"),
+        ])
+        resultado = self._rodar("corretor_cfop_item_registro50", conteudo)
+        self.assertEqual(len(resultado.itens), 1)
+        self.assertFalse(resultado.itens[0].corrigir)
+        self.assertIn("000002", resultado.itens[0].descricao)
 
     def test_arquivo_exemplo_nao_gera_falsos_positivos_novos(self):
         ids_novos = {
